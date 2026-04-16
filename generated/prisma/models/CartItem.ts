@@ -211,7 +211,7 @@ export type CartItemGroupByOutputType = {
   _max: CartItemMaxAggregateOutputType | null
 }
 
-type GetCartItemGroupByPayload<T extends CartItemGroupByArgs> = Prisma.PrismaPromise<
+export type GetCartItemGroupByPayload<T extends CartItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CartItemGroupByOutputType, T['by']> &
       {
@@ -295,7 +295,7 @@ export type CartItemScalarWhereWithAggregatesInput = {
 }
 
 export type CartItemCreateInput = {
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
   productItem: Prisma.ProductItemCreateNestedOneWithoutCartItemsInput
@@ -307,7 +307,7 @@ export type CartItemUncheckedCreateInput = {
   id?: number
   productItemId: number
   cartId: number
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
   ingredients?: Prisma.IngredientUncheckedCreateNestedManyWithoutCartItemInput
@@ -336,7 +336,7 @@ export type CartItemCreateManyInput = {
   id?: number
   productItemId: number
   cartId: number
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
 }
@@ -530,7 +530,7 @@ export type CartItemUncheckedUpdateManyWithoutCartNestedInput = {
 }
 
 export type CartItemCreateWithoutProductItemInput = {
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
   cart: Prisma.CartCreateNestedOneWithoutCartItemsInput
@@ -540,7 +540,7 @@ export type CartItemCreateWithoutProductItemInput = {
 export type CartItemUncheckedCreateWithoutProductItemInput = {
   id?: number
   cartId: number
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
   ingredients?: Prisma.IngredientUncheckedCreateNestedManyWithoutCartItemInput
@@ -585,7 +585,7 @@ export type CartItemScalarWhereInput = {
 }
 
 export type CartItemCreateWithoutIngredientsInput = {
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
   productItem: Prisma.ProductItemCreateNestedOneWithoutCartItemsInput
@@ -596,7 +596,7 @@ export type CartItemUncheckedCreateWithoutIngredientsInput = {
   id?: number
   productItemId: number
   cartId: number
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
 }
@@ -623,7 +623,7 @@ export type CartItemUpdateManyWithWhereWithoutIngredientsInput = {
 }
 
 export type CartItemCreateWithoutCartInput = {
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
   productItem: Prisma.ProductItemCreateNestedOneWithoutCartItemsInput
@@ -633,7 +633,7 @@ export type CartItemCreateWithoutCartInput = {
 export type CartItemUncheckedCreateWithoutCartInput = {
   id?: number
   productItemId: number
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
   ingredients?: Prisma.IngredientUncheckedCreateNestedManyWithoutCartItemInput
@@ -668,7 +668,7 @@ export type CartItemUpdateManyWithWhereWithoutCartInput = {
 export type CartItemCreateManyProductItemInput = {
   id?: number
   cartId: number
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
 }
@@ -727,7 +727,7 @@ export type CartItemUncheckedUpdateManyWithoutIngredientsInput = {
 export type CartItemCreateManyCartInput = {
   id?: number
   productItemId: number
-  quantity: number
+  quantity?: number
   createdAt?: Date | string
   updateAt?: Date | string
 }
@@ -1490,6 +1490,11 @@ export type CartItemFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Skip the first `n` CartItems.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of CartItems.
+   */
   distinct?: Prisma.CartItemScalarFieldEnum | Prisma.CartItemScalarFieldEnum[]
 }
 
