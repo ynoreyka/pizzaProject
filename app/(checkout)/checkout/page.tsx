@@ -1,67 +1,103 @@
-import { CheckoutItemDetails, Container, Title, WhiteBlock } from "@/shared/components/shared";
-import { Input, Textarea } from "@/shared/components/ui";
-import { Package, Percent, Truck } from "lucide-react";
+'use client';
+
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCart } from "@/shared/hooks";
+import { CheckoutAddressForm, CheckoutCart, CheckoutPersonalForm, CheckoutSidebar, Container, Title } from '@/shared/components';
+import { checkoutFormSchema, CheckoutFormValues } from '@/shared/constants';
+import { createOrder } from '@/app/actions';
+import toast from 'react-hot-toast';
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { Api } from '@/shared/services/api-client';
 
 
 export default function CheckoutPage() {
+    const [submitting, setSubmitting] = useState<boolean>(false);
+    const { totalAmount, items, updateItemQuantity, removeCartItem, loading } = useCart();
+    const { data: session } = useSession();
+
+    const form = useForm<CheckoutFormValues>({
+        resolver: zodResolver(checkoutFormSchema),
+        defaultValues: {
+            email: '',
+            firstName: '',
+            lastName: '',
+            phone: '',
+            address: '',
+            comment: '',
+        }
+    });
+
+    useEffect(() => {
+        async function fetchUserInfo() {
+            const data = await Api.auth.getMe();
+            const [firstName, lastName] = data.fullname.split(' ');
+
+            form.setValue('firstName', firstName);
+            form.setValue('lastName', lastName);
+            form.setValue('email', data.email);
+        }
+
+        if (session) {
+            fetchUserInfo();
+        }
+    }, [session]);
+
+    const onSubmit = async (data: CheckoutFormValues) => {
+        try {
+            setSubmitting(true);
+
+            const url = await createOrder(data);
+
+            toast.error('Заказ успешно оформлен! 📝 Переход на оплату... ', {
+                icon: '✅',
+            });
+
+            if (url) {
+                location.href = url;
+            }
+
+        } catch (error) {
+            console.log(error);
+            setSubmitting(false);
+            toast.error('Не удалось создать заказ', {
+                icon: '❌'
+            })
+        }
+    };
+
+
+    const onClickCountButton = (id: number, quantity: number, type: 'plus' | 'minus') => {
+        console.log(id, quantity, type);
+        const newQuantity = type === 'plus' ? quantity + 1 : quantity - 1;
+        updateItemQuantity(id, newQuantity);
+    }
 
     return <Container className="mt-10">
         <Title text="Оформление заказа" className="font-extrabold mb-8 text-[36px]" />
 
-        <div className="flex gap-10">
-            {/*Левая часть */}
-            <div className="flex flex-col gap-10 flex-1 mb-20">
-                <WhiteBlock title="1. Корзина">
-                    12212121
-                </WhiteBlock>
+        <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="flex gap-10">
+                    {/*Левая часть */}
+                    <div className="flex flex-col gap-10 flex-1 mb-20">
+                        <CheckoutCart onClickCountButton={onClickCountButton} removeCartItem={removeCartItem} items={items} loading={loading} />
 
-                <WhiteBlock title="2. Персональные данные">
-                    <div className="grid grid-cols-2 gap-5">
-                        <Input name='firstName' className="text-base" placeholder="Имя" />
-                        <Input name='lastName' className="text-base" placeholder="Фамилия" />
-                        <Input name='email' className="text-base" placeholder="E-Mail" />
-                        <Input name='phone' className="text-base" placeholder="Телефон" />
-                    </div>
-                </WhiteBlock>
+                        <CheckoutPersonalForm className={loading ? 'opacity-40 pointer-events-none' : ''} />
 
-                <WhiteBlock title="3. Адрес доставки">
-                    <div className="flex flex-col gap-5">
-                        <Input name='adres' className="text-base" placeholder="Введите адрес" />
-                        <Textarea
-                            rows={5} className="text-base" placeholder="Комментарий к заказу"
-                        />
+                        <CheckoutAddressForm className={loading ? 'opacity-40 pointer-events-none' : ''} />
                     </div>
-                </WhiteBlock>
-            </div>
-            {/*Правая часть */}
-            <div className="w-[450px]">
-                <WhiteBlock className="p-6 sticky top-4">
-                    <div className="flex flex-col gap-1">
-                        <span className="text-xl">Итого:</span>
-                        <span className="h-11 text-[34px] font-extrabold">3300 ₽</span>
+                    {/*Правая часть */}
+                    <div className="w-[450px]">
+                        <CheckoutSidebar totalAmount={totalAmount} loading={loading || submitting} />
                     </div>
+                </div>
+            </form>
 
-                    <CheckoutItemDetails title={
-                        <div className="flex items-center">
-                            <Package size={18} className="mr-2 text-gray-400" />
-                            Стоимость товаров:
-                        </div>
-                    } value={3000 + " ₽"} />
-                    <CheckoutItemDetails title={
-                        <div className="flex items-center">
-                            <Percent size={18} className="mr-2 text-gray-400" />
-                            Налоги:
-                        </div>
-                    } value={100 + " ₽"} />
-                    <CheckoutItemDetails title={
-                        <div className="flex items-center">
-                            <Truck size={18} className="mr-2 text-gray-400" />
-                            Доставка:
-                        </div>
-                    } value={200 + " ₽"} />
-                </WhiteBlock>
-            </div>
-        </div>
+        </FormProvider>
+
+
     </Container>
 };
 

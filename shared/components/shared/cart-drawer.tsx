@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import Image from 'next/image';
 
@@ -23,6 +23,7 @@ import { PizzaSize, PizzaType } from '@/shared/constants/pizza';
 import { CartStateItem } from '@/shared/lib/get-cart-details';
 import { Title } from '.';
 import { cn } from '@/shared/lib/utils';
+import { useCart } from '@/shared/hooks';
 
 
 interface Props {
@@ -31,11 +32,9 @@ interface Props {
 
 export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({ children, className }) => {
 
-    const totalAmount = useCartStore(state => state.totalAmount);
-    const fetchCartItems = useCartStore(state => state.fetchCartItems);
-    const items = useCartStore(state => state.items as CartStateItem[]);
-    const updateItemQuantity = useCartStore(state => state.updateItemQuantity);
-    const removeCartItem = useCartStore(state => state.removeCartItem);
+    const { totalAmount, items, updateItemQuantity, removeCartItem } = useCart();
+
+    const [redirecting, setRedirecting] = useState<boolean>(false);
 
     const onClickCountButton = (id: number, quantity: number, type: 'plus' | 'minus') => {
         console.log(id, quantity, type);
@@ -43,9 +42,6 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({ children,
         updateItemQuantity(id, newQuantity);
     }
 
-    useEffect(() => {
-        fetchCartItems();
-    }, []);
 
     console.log(items);
 
@@ -94,8 +90,10 @@ export const CartDrawer: React.FC<React.PropsWithChildren<Props>> = ({ children,
 
                                     <span className="font-bold text-lg">{totalAmount} ₽</span>
                                 </div>
-                                <Link href="/">
+                                <Link href="/checkout">
                                     <Button
+                                        onClick={() => setRedirecting(true)}
+                                        loading={redirecting}
                                         type="submit"
                                         className="w-full h-12 text-base">
                                         Оформить заказ

@@ -86,3 +86,13 @@ export type Order = Prisma.OrderModel
  * 
  */
 export type VerificationCode = Prisma.VerificationCodeModel
+/**
+ * Model Story
+ * 
+ */
+export type Story = Prisma.StoryModel
+/**
+ * Model StoryItem
+ * 
+ */
+export type StoryItem = Prisma.StoryItemModel

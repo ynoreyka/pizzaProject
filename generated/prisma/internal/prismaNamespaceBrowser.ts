@@ -59,7 +59,9 @@ export const ModelName = {
   Cart: 'Cart',
   CartItem: 'CartItem',
   Order: 'Order',
-  VerificationCode: 'VerificationCode'
+  VerificationCode: 'VerificationCode',
+  Story: 'Story',
+  StoryItem: 'StoryItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -189,6 +191,25 @@ export const VerificationCodeScalarFieldEnum = {
 } as const
 
 export type VerificationCodeScalarFieldEnum = (typeof VerificationCodeScalarFieldEnum)[keyof typeof VerificationCodeScalarFieldEnum]
+
+
+export const StoryScalarFieldEnum = {
+  id: 'id',
+  previewImageUrl: 'previewImageUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type StoryScalarFieldEnum = (typeof StoryScalarFieldEnum)[keyof typeof StoryScalarFieldEnum]
+
+
+export const StoryItemScalarFieldEnum = {
+  id: 'id',
+  storyId: 'storyId',
+  sourceUrl: 'sourceUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type StoryItemScalarFieldEnum = (typeof StoryItemScalarFieldEnum)[keyof typeof StoryItemScalarFieldEnum]
 
 
 export const SortOrder = {
